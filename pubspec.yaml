@@ -15,6 +15,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   webview_flutter: ^4.7.0
+  fluttertoast: ^8.2.5
 
 dev_dependencies:
   flutter_test:

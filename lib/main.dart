@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
@@ -33,7 +34,7 @@ class _WebViewExampleState extends State<WebViewExample> {
     }
 
     final WebViewController controller =
-    WebViewController.fromPlatformCreationParams(params);
+        WebViewController.fromPlatformCreationParams(params);
     // #enddocregion platform_features
 
     controller
@@ -58,33 +59,46 @@ class _WebViewExampleState extends State<WebViewExample> {
 
     _controller = controller;
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(child: WebViewWidget(controller: _controller,)),
+      body: SafeArea(
+          child: WillPopScope(
+              onWillPop: () => _goBack(context),
+              child: WebViewWidget(
+                controller: _controller,
+              ))),
       floatingActionButton: SampleMenu(webViewController: _controller),
     );
   }
 
-  Widget favoriteButton() {
-    return FloatingActionButton(
-      onPressed: () async {
-        final String? url = await _controller.currentUrl();
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Favorited $url')),
-          );
-        }
-      },
-      child: const Icon(Icons.favorite),
-    );
+  DateTime? currentBackPressTime;
+  Future<bool> _goBack(BuildContext context) async {
+    if (await _controller.canGoBack()) {
+      _controller.goBack();
+      return Future.value(false);
+    } else {
+      DateTime now = DateTime.now();
+
+      if (currentBackPressTime == null ||
+          now.difference(currentBackPressTime!) > const Duration(seconds: 2)) {
+        currentBackPressTime = now;
+        const msg = "'뒤로'버튼을 한 번 더 누르면 종료됩니다.";
+
+        Fluttertoast.showToast(msg: msg);
+        return Future.value(false);
+      }
+
+      return Future.value(true);
+    }
   }
 
   Future<void> openDialog(HttpAuthRequest httpRequest) async {
     final TextEditingController usernameTextController =
-    TextEditingController();
+        TextEditingController();
     final TextEditingController passwordTextController =
-    TextEditingController();
+        TextEditingController();
 
     return showDialog(
       context: context,
@@ -303,7 +317,7 @@ class SampleMenu extends StatelessWidget {
     }
     final List<String> cookieList = cookies.split(';');
     final Iterable<Text> cookieWidgets =
-    cookieList.map((String cookie) => Text(cookie));
+        cookieList.map((String cookie) => Text(cookie));
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,
