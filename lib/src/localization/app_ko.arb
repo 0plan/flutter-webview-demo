@@ -2,5 +2,6 @@
   "appTitle": "데모",
   "@appTitle": {
     "description": "앱 타이틀의 설명"
-  }
+  },
+  "settings": "설정"
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
 
 import 'src/app.dart';
 import 'src/settings/settings_controller.dart';
@@ -8,6 +10,7 @@ void main() async {
   // Set up the SettingsController, which will glue user settings to multiple
   // Flutter Widgets.
   final settingsController = SettingsController(SettingsService());
+  // final webviewController = WebViewController();
 
   // Load the user's preferred theme while the splash screen is displayed.
   // This prevents a sudden theme change when the app is first displayed.
@@ -17,4 +20,9 @@ void main() async {
   // SettingsController for changes, then passes it further down to the
   // SettingsView.
   runApp(MyApp(settingsController: settingsController));
+
+  @override
+  Widget build(BuildContext context) {
+    return const ShadApp();
+  }
 }
